@@ -22,7 +22,7 @@ namespace LibraryManagerServer
          builder.Services.ConfigureMySqlContext(builder.Configuration);
          builder.Services.ConfigureRepositoryWrapper();
          builder.Services.AddControllers();
-
+         builder.Services.AddAutoMapper(typeof(Program));
          var app = builder.Build();
 
          // Configure the HTTP request pipeline.

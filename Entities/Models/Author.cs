@@ -11,7 +11,8 @@ namespace Entities.Models
    [Table("author")]
    public class Author
    {
-      public Guid AuthorId { get; set; }
+      [Column("AuthorId")]
+      public Guid Id { get; set; }
 
       [Required(ErrorMessage = "Name is required")]
       [StringLength(60, ErrorMessage = "Name can't be longer than 60 characters")]

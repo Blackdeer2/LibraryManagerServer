@@ -1,6 +1,9 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
+using Entities.DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 
 namespace LibraryManagerServer.Controllers
 {
@@ -10,11 +13,13 @@ namespace LibraryManagerServer.Controllers
    {
       private ILoggerManager _logger;
       private IRepositoryWrapper _repository;
+      private IMapper _mapper;
 
-      public BookController(ILoggerManager logger, IRepositoryWrapper repository)
+      public BookController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper)
       {
          _logger = logger;
          _repository = repository;
+         _mapper = mapper;
       }
 
       [HttpGet]
@@ -26,6 +31,8 @@ namespace LibraryManagerServer.Controllers
             var books = _repository.Book.GetAllBooks();
 
             _logger.LogInfo("Return all books from database.");
+
+            var booksResult = _mapper.Map<IEnumerable<BookDto>>(books);
 
             return Ok(books);
                      }

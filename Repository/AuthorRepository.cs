@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,17 @@ namespace Repository
 {
    public class AuthorRepository : RepositoryBase<Author>, IAuthorRepository
    {
-        public AuthorRepository(RepositoryContext repositoryContext)
-         :base(repositoryContext) 
-        {
-        }
+      public AuthorRepository(RepositoryContext repositoryContext)
+       : base(repositoryContext)
+      {
+      }
 
-    }
+      public Author GetAuthorWithDetails(Guid authorId)
+      {
+         return FindByCondition(author => author.Id.Equals(authorId))
+            .Include(b => b.Books)
+            .FirstOrDefault();
+      }
+
+   }
 }

@@ -11,7 +11,8 @@ namespace Entities.Models
    [Table("book")]
    public class Book
    {
-      public Guid BookId { get; set; }
+      [Column("BookId")]
+      public Guid Id { get; set; }
 
       [Required(ErrorMessage = "Title type is required")]
       public string? Title { get; set; }
