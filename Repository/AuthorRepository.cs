@@ -25,5 +25,17 @@ namespace Repository
             .FirstOrDefault();
       }
 
+      public Author GetAuthorById(Guid authorId)
+      {
+         return FindByCondition(author => author.Id.Equals(authorId))
+            .FirstOrDefault();
+
+      }
+
+      public void CreateAuthor(Author author)
+      {
+         Create(author);
+      }
+
    }
 }

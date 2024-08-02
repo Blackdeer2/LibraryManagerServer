@@ -10,5 +10,7 @@ namespace Contracts
    public interface IAuthorRepository : IRepositoryBase<Author>
    {
       Author GetAuthorWithDetails(Guid authorId);
+      Author GetAuthorById(Guid id);
+      void CreateAuthor(Author author);
    }
 }

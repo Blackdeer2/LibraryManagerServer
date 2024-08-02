@@ -11,6 +11,7 @@ namespace LibraryManagerServer
         {
          CreateMap<Book, BookDto>();
          CreateMap<Author, AuthorDto>();
+         CreateMap<AuthorForCreateDto, Author>();
         }
     }
 }
