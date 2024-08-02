@@ -22,6 +22,34 @@ namespace LibraryManagerServer.Controllers
          _mapper = mapper;
       }
 
+      [HttpGet("{id}", Name = "BookById")]
+      public IActionResult GetBookById(Guid id)
+      {
+         try
+         {
+            var book = _repository.Book.GetBookById(id);
+            if (book is null)
+            {
+               _logger.LogError($"Book with id: {id}, hasn't been found in db.");
+               return NotFound();
+            }
+            else
+            {
+               _logger.LogInfo($"Returned owner with id: {id}");
+               var bookResult = _mapper.Map<BookDto>(book);
+               return Ok(bookResult);
+            }
+         }
+         catch (Exception ex)
+         {
+
+            _logger.LogError($"Something went wrong inside GetOwnerById action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+
+         }
+      }
+
+
       [HttpGet]
       public IActionResult GetAllBooks()
       {
@@ -35,7 +63,7 @@ namespace LibraryManagerServer.Controllers
             var booksResult = _mapper.Map<IEnumerable<BookDto>>(books);
 
             return Ok(books);
-                     }
+         }
          catch (Exception ex)
          {
             _logger.LogError($"Something went wrong inside GetAllBooks action: {ex.Message}");

@@ -22,5 +22,11 @@ namespace Repository
             .OrderBy(b => b.Title)
             .ToList();
       }
+
+      public Book GetBookById(Guid id)
+      {
+         return FindByCondition(b => b.Id.Equals(id))
+            .FirstOrDefault();
+      }
    }
 }
