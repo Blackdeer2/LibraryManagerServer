@@ -37,5 +37,15 @@ namespace Repository
          Create(author);
       }
 
+      public void UpdateAuthor(Author author)
+      {
+         Update(author);
+      }
+
+      public void DeleteAuthor(Author author)
+      {
+         Delete(author);
+      }
+
    }
 }

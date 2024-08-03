@@ -12,6 +12,9 @@ namespace LibraryManagerServer
          CreateMap<Book, BookDto>();
          CreateMap<Author, AuthorDto>();
          CreateMap<AuthorForCreateDto, Author>();
-        }
+         CreateMap<BookForCreateDto, Book>();
+         CreateMap<BookForUpdateDto, Book>();
+
+      }
     }
 }

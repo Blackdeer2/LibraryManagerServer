@@ -81,7 +81,8 @@ namespace LibraryManagerServer.Controllers
       }
 
       [HttpPost]
-      public IActionResult CreateAuthor([FromBody] AuthorForCreateDto author) {
+      public IActionResult CreateAuthor([FromBody] AuthorForCreateDto author)
+      {
 
          try
          {
@@ -104,18 +105,50 @@ namespace LibraryManagerServer.Controllers
 
             var createdAuthor = _mapper.Map<AuthorDto>(author);
 
-               return Ok(createdAuthor);
+            return Ok(createdAuthor);
             //return CreatedAtRoute("AuthorById", new { id = createdAuthor.Id }, createdAuthor);
 
          }
-         catch (Exception ex) {
+         catch (Exception ex)
+         {
 
             _logger.LogError($"Something went wrong inside CreateAuthor action: {ex.Message}");
             return StatusCode(500, "Internal server error");
 
          }
-      
-      
       }
+
+      [HttpDelete("{id}")]
+      public IActionResult DeleteAuthor(Guid id)
+      {
+         try
+         {
+            var author = _repository.Author.GetAuthorById(id);
+
+            if (author == null)
+            {
+               _logger.LogError($"Author with id: {id}, hasn't been found in db.");
+               return NotFound();
+            }
+            var booksByAuthor = _repository.Book.BookByAuthor(id).ToList();
+            
+               foreach (var book in booksByAuthor)
+               {
+                     _repository.Book.DeleteBook(book);
+               }
+            
+            _repository.Author.DeleteAuthor(author);
+            _repository.Save();
+
+            return NoContent();
+
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError($"Something went wrong inside DeleteAuthor action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+         }
+      }
+
    }
 }

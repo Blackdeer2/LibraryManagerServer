@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects;
+using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
+using System.Security.Principal;
+using System.Text;
 
 namespace LibraryManagerServer.Controllers
 {
@@ -71,6 +74,242 @@ namespace LibraryManagerServer.Controllers
          }
 
 
+      }
+
+      [HttpGet("title/{title}")]
+      public IActionResult GetAllBookByTitle(string title) {
+
+         try
+         {
+            var books = _repository.Book.BookByTitle(title);
+            _logger.LogInfo("Return all books by title from database.");
+
+            var booksResult = _mapper.Map<IEnumerable<BookDto>>(books);
+
+            return Ok(booksResult);
+
+         }
+         catch(Exception ex)
+         {
+            _logger.LogError($"Something went wrong inside GetAllBookByTitle action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+         }
+      
+      
+      }
+
+      [HttpGet("author/{authorId}")]
+      public IActionResult GetAllBookByAuthor(Guid authorId)
+      {
+
+         try
+         {
+            var books = _repository.Book.BookByAuthor(authorId);
+            _logger.LogInfo("Return all books by title from database.");
+
+            var booksResult = _mapper.Map<IEnumerable<BookDto>>(books);
+
+            return Ok(books);
+
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError($"Something went wrong inside GetAllBookByTitle action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+         }
+
+
+      }
+
+      [HttpPost("author/{authorId}")]
+      public IActionResult CreateBook(Guid authorId, [FromBody] BookForCreateDto book)
+      {
+         try
+         {
+
+            if (book == null)
+            {
+               _logger.LogError("Book object sent from client is null.");
+               return BadRequest("Book object is null");
+            }
+
+            if (!ModelState.IsValid)
+            {
+               _logger.LogError("Invalid book object sent from client.");
+               return BadRequest("Invalid model object");
+            }
+
+            var author = _repository.Author.GetAuthorById(authorId);
+
+            if (author is null)
+            {
+               _logger.LogError($"Author with id: {authorId}, hasn't been found in db.");
+               return NotFound();
+            }
+
+            var bookEntity = _mapper.Map<Book>(book);
+            bookEntity.AuthorId = authorId;
+
+            _repository.Book.CreateBook(bookEntity);
+            _repository.Save();
+
+
+            if (author.Books == null)
+            {
+               author.Books = new List<Book>();
+            }
+
+            author.Books.Add(bookEntity);
+
+            _repository.Author.UpdateAuthor(author);
+            _repository.Save();
+
+            var authorResult = _mapper.Map<AuthorDto>(author);
+            return Ok(authorResult);
+
+            /* if (book == null)
+             {
+                _logger.LogError("Book object sent from client is null.");
+                return BadRequest("Book object is null");
+             }
+
+             if (!ModelState.IsValid)
+             {
+                _logger.LogError("Invalid book object sent from client.");
+                return BadRequest("Invalid model object");
+             }
+
+             var author = _repository.Author.GetAuthorById(authorId);
+             var bookEntity = _mapper.Map<Book>(book);
+
+             _repository.Book.CreateBook(bookEntity);
+
+             author.Books.Add(bookEntity);
+
+             _repository.Save();
+
+             var createdBook = _mapper.Map<Book>(book);
+
+             return Ok(createdBook);*/
+         }
+         catch (Exception ex)
+         {
+
+            _logger.LogError($"Something went wrong inside CreateBook action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+
+         }
+
+
+      }
+
+      [HttpPut("{id}")]
+      public ActionResult UpdateBook(Guid id, [FromBody] BookForUpdateDto book)
+      {
+
+         try
+         {
+            if (book is null)
+            {
+               _logger.LogError("Book object sent from client is null.");
+               return BadRequest("Book object is null");
+            }
+            if (!ModelState.IsValid)
+            {
+               _logger.LogError("Invalid Book object sent from client.");
+               return BadRequest("Invalid model object");
+            }
+
+            var bookEntity = _repository.Book.GetBookById(id);
+
+            if (bookEntity is null)
+            {
+
+               _logger.LogError($"Book with id: {id}, hasn't been found in db.");
+               return NotFound();
+            }
+
+
+            _mapper.Map(book, bookEntity);
+            _repository.Book.UpdateBook(bookEntity);
+            _repository.Save();
+
+            return NoContent();
+
+
+         }
+         catch (Exception ex)
+         {
+
+            _logger.LogError($"Something went wrong inside UpdateBook action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+
+         }
+
+      }
+
+      [HttpDelete("{id}")]
+      public ActionResult DeleteBook(Guid id)
+      {
+         try
+         {
+            var book = _repository.Book.GetBookById(id);
+            if(book is null)
+            {
+               _logger.LogError($"Book with id: {id}, hasn't been found in db.");
+               return NotFound();
+            }
+
+            _repository.Book.DeleteBook(book);
+            _repository.Save();
+
+            return NoContent();
+
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError($"Something went wrong inside DeleteBook action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+         }
+      }
+
+      [HttpGet("export")]
+      public IActionResult ExportBooks()
+      {
+         try
+         {
+            var books = _repository.Book.GetAllBooks();
+
+            var bookDtos = _mapper.Map<IEnumerable<BookExportDto>>(books);
+
+            var csv = GenerateCsv(bookDtos);
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csv);
+            var result = new FileContentResult(bytes, "text/csv")
+            {
+               FileDownloadName = "books.csv"
+            };
+
+            return result;
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError($"Something went wrong inside ExportBooks action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+         }
+      }
+
+      private string GenerateCsv(IEnumerable<BookExportDto> books)
+      {
+         var csv = new StringBuilder();
+         csv.AppendLine("Title,Author,PublishedDate,Genre");
+
+         foreach (var book in books)
+         {
+            csv.AppendLine($"{book.Title},{book.Author},{book.PublishedDate:yyyy-MM-dd},{book.Genre}");
+         }
+
+         return csv.ToString();
       }
    }
 }
