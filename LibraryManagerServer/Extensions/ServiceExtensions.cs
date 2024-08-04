@@ -10,6 +10,7 @@ namespace LibraryManagerServer.Extensions
    {
       public static void ConfigureCors(this IServiceCollection services)
       {
+         services.AddControllers();
          services.AddCors(options =>
          {
             options.AddPolicy("CorsPolicy",

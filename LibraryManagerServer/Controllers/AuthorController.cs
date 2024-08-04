@@ -22,6 +22,29 @@ namespace LibraryManagerServer.Controllers
          _mapper = mapper;
       }
 
+      [HttpGet]
+      public IActionResult GetAllAuthors()
+      {
+
+         try
+         {
+            var authors = _repository.Author.GetAllAuthors();
+
+            _logger.LogInfo("Return all books from database.");
+
+            var booksResult = _mapper.Map<IEnumerable<AuthorDto>>(authors);
+
+            return Ok(authors);
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError($"Something went wrong inside GetAllBooks action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+         }
+
+
+      }
+
       [HttpGet("{id}/book")]
       public IActionResult GetAuthorsWithDetails(Guid id)
       {

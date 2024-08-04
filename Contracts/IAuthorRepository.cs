@@ -9,6 +9,7 @@ namespace Contracts
 {
    public interface IAuthorRepository : IRepositoryBase<Author>
    {
+      IEnumerable<Author> GetAllAuthors();
       Author GetAuthorWithDetails(Guid authorId);
       Author GetAuthorById(Guid id);
       void CreateAuthor(Author author);

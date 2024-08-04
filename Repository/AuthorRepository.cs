@@ -4,6 +4,7 @@ using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -16,6 +17,12 @@ namespace Repository
       public AuthorRepository(RepositoryContext repositoryContext)
        : base(repositoryContext)
       {
+      }
+
+      public IEnumerable<Author> GetAllAuthors() {
+
+         return FindAll().ToList();
+      
       }
 
       public Author GetAuthorWithDetails(Guid authorId)

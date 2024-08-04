@@ -306,7 +306,7 @@ namespace LibraryManagerServer.Controllers
 
          foreach (var book in books)
          {
-            csv.AppendLine($"{book.Title},{book.Author},{book.PublishedDate:yyyy-MM-dd},{book.Genre}");
+            csv.AppendLine($"{book.Title}");
          }
 
          return csv.ToString();
