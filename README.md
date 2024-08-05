@@ -22,14 +22,14 @@ The Library Manager API is a RESTful API designed for managing a library. It all
 Clone the repository:
 https://github.com/Blackdeer2/LibraryManagerServer.git
 
-Create Db
-CREATE TABLE IF NOT EXISTS `LibraryManager`.`Author` (
+##Create Db
+``CREATE TABLE IF NOT EXISTS `LibraryManager`.`Author` (
   `AuthorId` VARCHAR(36) NOT NULL,
   `Name` VARCHAR(60) NOT NULL,
   PRIMARY KEY (`AuthorId`))
-ENGINE = InnoDB;
+ENGINE = InnoDB;``
 
-CREATE TABLE IF NOT EXISTS `LibraryManager`.`Book` (
+``CREATE TABLE IF NOT EXISTS `LibraryManager`.`Book` (
   `BookId` VARCHAR(36) NOT NULL,
   `Title` VARCHAR(60) NOT NULL,
   `AuthorId` VARCHAR(36) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `LibraryManager`.`Book` (
     REFERENCES `LibraryManager`.`Author` (`AuthorId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB;``
 
 Update the connection string in `appsettings.json`.
 "mysqlconnection": {
