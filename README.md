@@ -69,6 +69,8 @@ Test through the Postman program
   **Filter book by author id**
  GET http://localhost:5000/api/book/author/{authorId}
 
+### Author
+
  **Add author**
  POST http://localhost:5000/api/author
 
