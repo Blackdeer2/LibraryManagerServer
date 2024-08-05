@@ -272,44 +272,5 @@ namespace LibraryManagerServer.Controllers
             return StatusCode(500, "Internal server error");
          }
       }
-
-      [HttpGet("export")]
-      public IActionResult ExportBooks()
-      {
-         try
-         {
-            var books = _repository.Book.GetAllBooks();
-
-            var bookDtos = _mapper.Map<IEnumerable<BookExportDto>>(books);
-
-            var csv = GenerateCsv(bookDtos);
-
-            var bytes = System.Text.Encoding.UTF8.GetBytes(csv);
-            var result = new FileContentResult(bytes, "text/csv")
-            {
-               FileDownloadName = "books.csv"
-            };
-
-            return result;
-         }
-         catch (Exception ex)
-         {
-            _logger.LogError($"Something went wrong inside ExportBooks action: {ex.Message}");
-            return StatusCode(500, "Internal server error");
-         }
-      }
-
-      private string GenerateCsv(IEnumerable<BookExportDto> books)
-      {
-         var csv = new StringBuilder();
-         csv.AppendLine("Title,Author,PublishedDate,Genre");
-
-         foreach (var book in books)
-         {
-            csv.AppendLine($"{book.Title}");
-         }
-
-         return csv.ToString();
-      }
    }
 }
