@@ -2,7 +2,6 @@ using LibraryManagerServer.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
 using NLog;
 using System.Reflection;
 
@@ -27,23 +26,9 @@ namespace LibraryManagerServer
          builder.Services.ConfigureRepositoryWrapper();
          builder.Services.AddControllers();
          builder.Services.AddAutoMapper(typeof(Program));
-
-         builder.Services.AddApiVersioning(options =>
-         {
-            options.DefaultApiVersion = new ApiVersion(1, 0);
-            options.AssumeDefaultVersionWhenUnspecified = true;
-            options.ReportApiVersions = true;
-         });
          var app = builder.Build();
 
          // Configure the HTTP request pipeline.
-
-         app.UseSwagger();
-         app.UseSwaggerUI(options =>
-         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "Library Manager");
-            options.RoutePrefix = string.Empty; // Set the Swagger UI at the root URL
-         });
 
          if (app.Environment.IsDevelopment())
          {
